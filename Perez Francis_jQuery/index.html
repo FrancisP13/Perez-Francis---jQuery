@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Tareas con jQuery</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #c2f1ff;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    #mensaje {
+      display: none;
+      color: green;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    #tareaInput {
+      width: 60%;
+      padding: 8px;
+    }
+    .boton {
+      padding: 8px 12px;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background-color: #fff;
+      margin: 5px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+    .completada {
+      text-decoration: line-through;
+      color: gray;
+    }
+    .acciones {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Lista de Tareas</h1>
+  <div id="mensaje">¡Tarea agregada!</div>
+  <input type="text" id="tareaInput" placeholder="Escribe una nueva tarea">
+  <button id="agregarBtn" class="boton">Agregar</button>
+  <button id="vaciarBtn" class="boton">Vaciar Lista</button>
+
+  <h2>Tareas Pendientes</h2>
+  <ul id="listaTareas"></ul>
+  <h2>Tareas Completadas</h2>
+  <ul id="listaCompletadas"></ul>
+  <script>
+    $(document).ready(function () {
+
+      // Agregar tarea
+      $('#agregarBtn').click(function () {
+        let texto = $('#tareaInput').val().trim();
+        if (texto !== "") {
+          let nuevaTarea = $('<li></li>');
+          let spanTexto = $('<span></span>').addClass('texto').text(texto);
+          let btnCompletar = $('<button></button>').addClass('acciones completar').text('Completar');
+          let btnEditar = $('<button></button>').addClass('acciones editar').text('Editar');
+          let btnEliminar = $('<button></button>').addClass('acciones eliminar').text('Eliminar');
+          nuevaTarea.append(spanTexto, btnCompletar, btnEditar, btnEliminar);
+          $('#listaTareas').append(nuevaTarea);
+          $('#mensaje').hide().fadeIn().delay(1000).fadeOut();
+          $('#tareaInput').val('');
+        }
+      });
+
+      // Mover a tareas completadas
+      $('#listaTareas').on('click', '.completar', function () {
+        let li = $(this).parent();
+        li.find('.completar, .editar').remove();
+        li.find('.texto').addClass('completada');
+        $('#listaCompletadas').append(li);
+      });
+
+      // Eliminar tarea
+      $('ul').on('click', '.eliminar', function () {
+        $(this).parent().remove();
+      });
+
+      // Editar tarea
+      $('#listaTareas').on('click', '.editar', function () {
+        let li = $(this).parent();
+        let textoActual = li.find('.texto').text();
+        li.empty();
+        let inputEditar = $('<input type="text">').addClass('editarInput').val(textoActual);
+        let btnGuardar = $('<button></button>').addClass('acciones guardar').text('Guardar');
+        li.append(inputEditar, btnGuardar);
+      });
+
+      // Guardar edición
+      $('#listaTareas').on('click', '.guardar', function () {
+        let li = $(this).parent();
+        let nuevoTexto = li.find('.editarInput').val().trim();
+        if (nuevoTexto !== "") {
+          li.empty();
+          let spanTexto = $('<span></span>').addClass('texto').text(nuevoTexto);
+          let btnCompletar = $('<button></button>').addClass('acciones completar').text('Completar');
+          let btnEditar = $('<button></button>').addClass('acciones editar').text('Editar');
+          let btnEliminar = $('<button></button>').addClass('acciones eliminar').text('Eliminar');
+          li.append(spanTexto, btnCompletar, btnEditar, btnEliminar);
+        }
+      });
+
+      // Vaciar lista
+      $('#vaciarBtn').click(function () {
+        $('#listaTareas').empty();
+      });
+    });
+  </script>
+</body>
+</html>
